@@ -190,6 +190,7 @@ export function build(opts = {}) {
 
   let totalPdfs = 0;
   let totalDocx = 0;
+  const builtDiagramsDirs = [];
 
   for (const sourceMd of inputFiles) {
     if (!fs.existsSync(sourceMd)) {
@@ -197,6 +198,7 @@ export function build(opts = {}) {
       continue;
     }
     const result = buildOne(sourceMd, { noMermaid, keepMermaid });
+    if (result.diagramsDir) builtDiagramsDirs.push(result.diagramsDir);
     if (result.pdf) totalPdfs++;
     if (result.docx) totalDocx++;
   }
@@ -218,7 +220,9 @@ export function build(opts = {}) {
   console.log('');
   console.log('[6/6] Cleanup');
   if (!keepMermaid) {
-    cleanupMmd(DIAGRAMS_DIR);
+    for (const dir of builtDiagramsDirs) {
+      cleanupMmdInDir(dir);
+    }
     console.log('  ✓ Cleaned .mmd source files');
   } else {
     console.log('  ✓ Kept .mmd source files (--keep-mermaid)');
@@ -227,14 +231,11 @@ export function build(opts = {}) {
   return { totalPdfs, totalDocx };
 }
 
-function cleanupMmd(dir) {
+function cleanupMmdInDir(dir) {
   if (!fs.existsSync(dir)) return;
-  function walk(d) {
-    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
-      const full = path.join(d, entry.name);
-      if (entry.isDirectory()) walk(full);
-      else if (entry.isFile() && entry.name.endsWith('.mmd')) fs.unlinkSync(full);
+  for (const f of fs.readdirSync(dir)) {
+    if (f.endsWith('.mmd')) {
+      fs.unlinkSync(path.join(dir, f));
     }
   }
-  walk(dir);
 }

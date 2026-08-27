@@ -75,6 +75,17 @@ jobs:
 
       - run: npm ci
 
+      - name: Add npm bins to PATH
+        shell: pwsh
+        run: |
+          # Add local node_modules/.bin (for mmdc from npm ci)
+          $localBin = Join-Path (Get-Location) "node_modules\.bin"
+          echo $localBin >> $env:GITHUB_PATH
+          # Add npm global bin (fallback)
+          $npmGlobal = npm config get prefix
+          echo $npmGlobal >> $env:GITHUB_PATH
+          Write-Host "Added to PATH: $localBin, $npmGlobal"
+
       - name: Verify tools
         shell: pwsh
         run: |
