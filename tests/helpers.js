@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// tests/ dir → project root (where tests/fixtures/ lives)
-const TESTS_ROOT = path.resolve(__dirname, '..');
+// __dirname = tests/ , fixtures live in tests/fixtures/
+const TESTS_ROOT = __dirname;
 
 /**
  * Run a build and return the output directory for the given basename.

@@ -48,6 +48,7 @@ tlmgr install \
   hyperref \
   url \
   etoolbox \
+  enumitem \
   2>&1 | tail -5 || true
 # Verify xelatex actually works
 if ! command -v xelatex >/dev/null 2>&1; then
