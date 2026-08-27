@@ -84,4 +84,4 @@ No files are written outside the current working directory (except `assets/` whi
 
 - **Security email:** aiyu@example.com
 - **PGP key:** Available on request
-- **General issues:** [GitHub Issues](https://github.com/aiyu/aiyu-md2pdf/issues)
+- **General issues:** [GitHub Issues](https://github.com/MN-Lizard-Team/aiyu-md2pdf/issues)

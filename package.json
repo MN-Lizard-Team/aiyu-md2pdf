@@ -52,12 +52,12 @@
     "xelatex",
     "converter"
   ],
-  "homepage": "https://github.com/aiyu/aiyu-md2pdf#readme",
+  "homepage": "https://github.com/MN-Lizard-Team/aiyu-md2pdf#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aiyu/aiyu-md2pdf.git"
+    "url": "git+https://github.com/MN-Lizard-Team/aiyu-md2pdf.git"
   },
   "bugs": {
-    "url": "https://github.com/aiyu/aiyu-md2pdf/issues"
+    "url": "https://github.com/MN-Lizard-Team/aiyu-md2pdf/issues"
   }
 }

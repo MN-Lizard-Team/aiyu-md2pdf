@@ -57,4 +57,4 @@ Initial release — Node.js CLI for converting Markdown to PDF + Word with Merma
 - MIT license
 - Previous bash version preserved in `legacy/` for reference
 
-[1.0.0]: https://github.com/aiyu/aiyu-md2pdf/releases/tag/v1.0.0
+[1.0.0]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.0.0

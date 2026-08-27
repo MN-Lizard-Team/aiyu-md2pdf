@@ -8,8 +8,8 @@
 
 [Features](#features) · [Install](#install) · [Usage](#usage) · [Output](#output) · [Testing](#testing) · [CI](#ci) · [ภาษาไทย](#ภาษาไทย) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-[![CI](https://github.com/aiyu/aiyu-md2pdf/actions/workflows/ci.yml/badge.svg)](https://github.com/aiyu/aiyu-md2pdf/actions/workflows/ci.yml)
-[![CI Windows](https://github.com/aiyu/aiyu-md2pdf/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/aiyu/aiyu-md2pdf/actions/workflows/ci-windows.yml)
+[![CI](https://github.com/MN-Lizard-Team/aiyu-md2pdf/actions/workflows/ci.yml/badge.svg)](https://github.com/MN-Lizard-Team/aiyu-md2pdf/actions/workflows/ci.yml)
+[![CI Windows](https://github.com/MN-Lizard-Team/aiyu-md2pdf/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/MN-Lizard-Team/aiyu-md2pdf/actions/workflows/ci-windows.yml)
 [![npm version](https://img.shields.io/npm/v/aiyu-md2pdf.svg)](https://www.npmjs.com/package/aiyu-md2pdf)
 
 </div>

@@ -179,8 +179,8 @@ Releases are managed by maintainers:
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/aiyu/aiyu-md2pdf/discussions) for questions
-- Open an [Issue](https://github.com/aiyu/aiyu-md2pdf/issues) for bugs
+- Open a [Discussion](https://github.com/MN-Lizard-Team/aiyu-md2pdf/discussions) for questions
+- Open an [Issue](https://github.com/MN-Lizard-Team/aiyu-md2pdf/issues) for bugs
 - Read the [README](README.md) for usage details
 
 ---
