@@ -23,36 +23,37 @@ jobs:
       - name: Install poppler (pdfinfo)
         run: choco install poppler -y --no-progress
 
-      - name: Install TinyTeX + LaTeX packages
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri "https://yihui.org/tinytex/install-bin-windows.bat" -OutFile "install-tinytex.bat"
-          Start-Process -FilePath "install-tinytex.bat" -Wait -NoNewWindow
-          # Search for TinyTeX bin dir in all common locations
-          $candidates = @(
-            "$env:APPDATA\TinyTeX\bin\windows",
-            "$env:LOCALAPPDATA\TinyTeX\bin\windows",
-            "$env:USERPROFILE\TinyTeX\bin\windows",
-            "$env:ProgramFiles\TinyTeX\bin\windows",
-            "${env:ProgramFiles(x86)}\TinyTeX\bin\windows"
-          )
-          $tinytexBin = $candidates | Where-Object { Test-Path "$_\tlmgr.bat" } | Select-Object -First 1
-          if (-not $tinytexBin) {
-            # Last resort: search filesystem
-            $found = Get-ChildItem -Path "$env:USERPROFILE","$env:APPDATA","$env:LOCALAPPDATA" -Recurse -Filter "tlmgr.bat" -ErrorAction SilentlyContinue | Select-Object -First 1
-            if ($found) { $tinytexBin = Split-Path $found.FullName }
-          }
-          if (-not $tinytexBin) {
-            Write-Error "TinyTeX tlmgr.bat not found in any location"
-            exit 1
-          }
-          Write-Host "TinyTeX bin: $tinytexBin"
-          $env:PATH = "$tinytexBin;$env:PATH"
-          # Install packages
-          & "$tinytexBin\tlmgr.bat" install latexmk fontspec polyglossia fancyhdr lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox enumitem 2>&1 | Select-Object -Last 5
-          # Verify
-          & "$tinytexBin\xelatex.exe" --version | Select-Object -First 1
-          echo $tinytexBin >> $env:GITHUB_PATH
+      - name: Install TinyTeX
+        uses: r-lib/actions/setup-tinytex@v2
+        with:
+          packages: |
+            latexmk
+            fontspec
+            polyglossia
+            fancyhdr
+            fancyvrb
+            lastpage
+            xecjk
+            environ
+            trimspaces
+            ulem
+            pgfplots
+            booktabs
+            longtable
+            caption
+            graphics
+            tools
+            ec
+            xcolor
+            geometry
+            hyperref
+            url
+            etoolbox
+            enumitem
+            titlesec
+            tocloft
+            adjustbox
+            float
 
       - name: Install Sarabun font
         shell: pwsh

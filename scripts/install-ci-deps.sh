@@ -31,6 +31,7 @@ tlmgr install \
   fontspec \
   polyglossia \
   fancyhdr \
+  fancyvrb \
   lastpage \
   xecjk \
   environ \
@@ -49,6 +50,10 @@ tlmgr install \
   url \
   etoolbox \
   enumitem \
+  titlesec \
+  tocloft \
+  adjustbox \
+  float \
   2>&1 | tail -5 || true
 # Verify xelatex actually works
 if ! command -v xelatex >/dev/null 2>&1; then
