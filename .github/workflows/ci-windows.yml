@@ -37,20 +37,25 @@ jobs:
       - name: Install Sarabun font
         shell: pwsh
         run: |
-          $fontDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-          New-Item -ItemType Directory -Force -Path $fontDir
+          # Install to system fonts folder (C:\Windows\Fonts) for XeLaTeX visibility
+          $fontDir = "C:\Windows\Fonts"
           $fonts = @('Sarabun-Regular','Sarabun-Bold','Sarabun-Italic','Sarabun-BoldItalic')
           foreach ($f in $fonts) {
             $url = "https://github.com/google/fonts/raw/main/ofl/sarabun/$f.ttf"
             $dest = Join-Path $fontDir "$f.ttf"
             Invoke-WebRequest -Uri $url -OutFile $dest
+            # Register in registry so fontspec/fontconfig can find it
+            $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+            $regName = "$f (TrueType)"
+            New-ItemProperty -Path $regPath -Name $regName -Value $dest -PropertyType String -Force | Out-Null
           }
-          $shell = New-Object -ComObject Shell.Application
-          $fontsFolder = $shell.Namespace(0x14)
-          foreach ($f in $fonts) {
-            $fontPath = Join-Path $fontDir "$f.ttf"
-            $fontsFolder.CopyHere($fontPath, 0x10)
-          }
+          Write-Host "Installed fonts:"
+          Get-ChildItem "C:\Windows\Fonts\Sarabun*" | ForEach-Object { Write-Host "  $($_.Name)" }
+          # Refresh font cache
+          Add-Type -AssemblyName System.Drawing
+          $fonts = [System.Drawing.Text.PrivateFontCollection]::new()
+          $fonts.AddFontFile("C:\Windows\Fonts\Sarabun-Regular.ttf")
+          Write-Host "Font family name: $($fonts.Families[0].Name)"
 
       - run: npm ci
 
