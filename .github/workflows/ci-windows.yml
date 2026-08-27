@@ -20,11 +20,25 @@ jobs:
       - name: Install Pandoc
         run: choco install pandoc -y --no-progress
 
-      - name: Install MiKTeX
-        run: choco install miktex -y --no-progress
-
       - name: Install poppler (pdfinfo)
         run: choco install poppler -y --no-progress
+
+      - name: Install TinyTeX
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://yihui.org/tinytex/install-bin-windows.bat" -OutFile "install-tinytex.bat"
+          Start-Process -FilePath "install-tinytex.bat" -Wait -NoNewWindow
+          # TinyTeX installs to ~\AppData\Roaming\TinyTeX\bin\windows
+
+      - name: Install LaTeX packages
+        shell: pwsh
+        run: |
+          $tinytexBin = "$env:APPDATA\TinyTeX\bin\windows"
+          if (-not (Test-Path $tinytexBin)) {
+            $tinytexBin = "$env:LOCALAPPDATA\TinyTeX\bin\windows"
+          }
+          $env:PATH = "$tinytexBin;$env:PATH"
+          tlmgr install latexmk fontspec polyglossia fancyhdr lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox 2>&1 | Select-Object -Last 5
 
       - name: Install Sarabun font
         shell: pwsh
@@ -37,7 +51,6 @@ jobs:
             $dest = Join-Path $fontDir "$f.ttf"
             Invoke-WebRequest -Uri $url -OutFile $dest
           }
-          # Register fonts
           $shell = New-Object -ComObject Shell.Application
           $fontsFolder = $shell.Namespace(0x14)
           foreach ($f in $fonts) {
@@ -47,29 +60,14 @@ jobs:
 
       - run: npm ci
 
-      - name: Set MiKTeX PATH
+      - name: Add TinyTeX to PATH
         shell: pwsh
         run: |
-          $miktexBin = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\MiKTeX" -Recurse -Filter "xelatex.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($miktexBin) {
-            $miktexDir = Split-Path $miktexBin.FullName
-            echo $miktexDir >> $env:GITHUB_PATH
-            Write-Host "Added MiKTeX bin to PATH: $miktexDir"
-          } else {
-            # Fallback: check common install locations
-            $candidates = @(
-              "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64",
-              "C:\Program Files\MiKTeX\miktex\bin\x64",
-              "C:\Program Files (x86)\MiKTeX\miktex\bin\x64"
-            )
-            foreach ($c in $candidates) {
-              if (Test-Path "$c\xelatex.exe") {
-                echo $c >> $env:GITHUB_PATH
-                Write-Host "Added MiKTeX bin to PATH: $c"
-                break
-              }
-            }
+          $tinytexBin = "$env:APPDATA\TinyTeX\bin\windows"
+          if (-not (Test-Path $tinytexBin)) {
+            $tinytexBin = "$env:LOCALAPPDATA\TinyTeX\bin\windows"
           }
+          echo $tinytexBin >> $env:GITHUB_PATH
 
       - name: Verify tools
         shell: pwsh

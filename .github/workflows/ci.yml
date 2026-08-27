@@ -41,6 +41,8 @@ jobs:
       - name: Install system dependencies
         run: ./scripts/install-ci-deps.sh
       - run: npm ci
+      - name: Add TinyTeX to PATH
+        run: echo "$HOME/.TinyTeX/bin/x86_64-linux" >> $GITHUB_PATH
       - name: Run E2E tests
         run: npm run test:e2e
       - name: Upload build output on failure
