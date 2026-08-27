@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const MERMAID_BLOCK_RE = /```mermaid\n([\s\S]*?)```/g;
+const MERMAID_BLOCK_RE = /```mermaid\r?\n([\s\S]*?)```/g;
 
 /**
  * Build a map of mermaid block start positions → nearest preceding heading.

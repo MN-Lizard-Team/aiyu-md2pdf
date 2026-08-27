@@ -1,0 +1,13 @@
+# Normalize line endings to LF for source files
+# This prevents CRLF issues with regex matching on Windows
+
+* text=auto eol=lf
+
+# Binary files (don't touch)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.docx binary
+*.ttf binary
+*.otf binary
