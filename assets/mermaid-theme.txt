@@ -1,0 +1,114 @@
+%% Mermaid theme for PRINT / PHOTOCOPY (High Contrast, Black & White)
+%% Optimized for photocopying: no gray, thick lines, large text
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#FFFFFF',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000',
+    'secondaryColor': '#FFFFFF',
+    'tertiaryColor': '#FFFFFF',
+    'background': '#FFFFFF',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#FFFFFF',
+    'tertiaryBkg': '#FFFFFF',
+    'fontSize': '24px',
+    'fontFamily': 'Sarabun, Noto Sans Thai, sans-serif',
+    'edgeLabelBackground': '#FFFFFF'
+  },
+  'flowchart': {
+    'curve': 'linear',
+    'nodeSpacing': 90,
+    'rankSpacing': 90,
+    'padding': 30,
+    'useMaxWidth': true,
+    'htmlLabels': true,
+    'wrappingWidth': 280
+  },
+  'sequence': {
+    'actorMargin': 80,
+    'boxMargin': 25,
+    'noteMargin': 25,
+    'messageMargin': 60,
+    'mirrorActors': true,
+    'useMaxWidth': true
+  },
+  'stateDiagram': {
+    'fontSize': '24px',
+    'useMaxWidth': true
+  },
+  'themeCSS': '
+    .node rect, .node circle, .node ellipse, .node polygon {
+      stroke-width: 2.5px;
+      stroke: #000000;
+      fill: #FFFFFF;
+    }
+    .edgePath .path {
+      stroke-width: 2.5px;
+      stroke: #000000;
+    }
+    .edgeLabel {
+      background-color: #FFFFFF;
+      color: #000000;
+      font-weight: bold;
+      padding: 4px 8px;
+    }
+    .edgeLabel rect {
+      fill: #FFFFFF;
+      stroke: #FFFFFF;
+      stroke-width: 8px;
+    }
+    .edgePath .path + .edgeLabel {
+      background-color: #FFFFFF;
+    }
+    .label {
+      color: #000000;
+      font-weight: bold;
+    }
+    .label text {
+      fill: #000000;
+    }
+    .cluster rect {
+      stroke: #000000;
+      stroke-width: 2px;
+      stroke-dasharray: 5,5;
+      fill: #FFFFFF;
+    }
+    .node .label {
+      color: #000000;
+    }
+    text {
+      font-family: Sarabun, Noto Sans Thai, sans-serif;
+      fill: #000000;
+      font-weight: bold;
+    }
+    .actor {
+      stroke: #000000;
+      stroke-width: 2.5px;
+      fill: #FFFFFF;
+    }
+    .messageLine0 {
+      stroke-width: 2.5px;
+      stroke: #000000;
+    }
+    .messageText {
+      fill: #000000;
+      font-weight: bold;
+    }
+    .note {
+      stroke: #000000;
+      stroke-width: 2px;
+      fill: #FFFFFF;
+    }
+    .noteText {
+      fill: #000000;
+      font-weight: bold;
+    }
+    .activation0 {
+      fill: #FFFFFF;
+      stroke: #000000;
+      stroke-width: 2px;
+    }
+  '
+}}%%

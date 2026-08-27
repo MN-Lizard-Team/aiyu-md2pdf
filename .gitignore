@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output (temp files)
+build/
+
+# Generated output (PDF, DOCX, diagrams)
+result/
+
+# Mermaid source files (intermediate)
+*.mmd
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

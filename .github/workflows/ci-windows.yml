@@ -1,0 +1,67 @@
+name: CI Windows
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  e2e-windows:
+    name: E2E tests (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install MiKTeX
+        uses: MiKTeX/setup-miktex@v1
+        with:
+          miktex-version: 'latest'
+
+      - name: Install Pandoc
+        run: choco install pandoc -y --no-progress
+
+      - name: Install poppler (pdfinfo)
+        run: choco install poppler -y --no-progress
+
+      - name: Install Sarabun font
+        shell: pwsh
+        run: |
+          $fontDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+          New-Item -ItemType Directory -Force -Path $fontDir
+          $fonts = @('Sarabun-Regular','Sarabun-Bold','Sarabun-Italic','Sarabun-BoldItalic')
+          foreach ($f in $fonts) {
+            $url = "https://github.com/google/fonts/raw/main/ofl/sarabun/$f.ttf"
+            $dest = Join-Path $fontDir "$f.ttf"
+            Invoke-WebRequest -Uri $url -OutFile $dest
+          }
+          # Register fonts
+          $shell = New-Object -ComObject Shell.Application
+          $fontsFolder = $shell.Namespace(0x14)
+          foreach ($f in $fonts) {
+            $fontPath = Join-Path $fontDir "$f.ttf"
+            $fontsFolder.CopyHere($fontPath, 0x10)
+          }
+
+      - run: npm ci
+
+      - name: Set MiKTeX PATH
+        shell: pwsh
+        run: echo "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64" >> $env:GITHUB_PATH
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
+
+      - name: Upload build output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-windows
+          path: result/
+          retention-days: 7

@@ -1,0 +1,63 @@
+{
+  "name": "aiyu-md2pdf",
+  "version": "1.0.0",
+  "description": "Markdown → PDF + Word with Mermaid diagrams. Thai & English. Cross-platform.",
+  "license": "MIT",
+  "author": "Aiyu",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "aiyu-md2pdf": "./bin/cli.js"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "vitest run tests/e2e",
+    "test:watch": "vitest",
+    "lint": "eslint bin/ src/ tests/",
+    "build:example": "node bin/cli.js docs/example/example-th.md"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "js-yaml": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@mermaid-js/mermaid-cli": "11.4.2"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "11.4.2",
+    "eslint": "^9.10.0",
+    "vitest": "^2.1.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "assets/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "markdown",
+    "pdf",
+    "docx",
+    "word",
+    "mermaid",
+    "thai",
+    "pandoc",
+    "latex",
+    "xelatex",
+    "converter"
+  ],
+  "homepage": "https://github.com/aiyu/aiyu-md2pdf#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aiyu/aiyu-md2pdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aiyu/aiyu-md2pdf/issues"
+  }
+}
