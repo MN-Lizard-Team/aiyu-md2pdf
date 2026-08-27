@@ -25,35 +25,14 @@ jobs:
 
       - name: Install TinyTeX
         uses: r-lib/actions/setup-tinytex@v2
-        with:
-          packages: |
-            latexmk
-            fontspec
-            polyglossia
-            fancyhdr
-            fancyvrb
-            lastpage
-            xecjk
-            environ
-            trimspaces
-            ulem
-            pgfplots
-            booktabs
-            longtable
-            caption
-            graphics
-            tools
-            ec
-            xcolor
-            geometry
-            hyperref
-            url
-            etoolbox
-            enumitem
-            titlesec
-            tocloft
-            adjustbox
-            float
+
+      - name: Install LaTeX packages
+        shell: pwsh
+        run: |
+          tlmgr update --self
+          tlmgr install latexmk fontspec polyglossia fancyhdr fancyvrb lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox enumitem titlesec tocloft adjustbox float 2>&1 | Select-Object -Last 5
+          # Verify polyglossia installed
+          tlmgr info polyglossia | Select-String "installed"
 
       - name: Install Sarabun font
         shell: pwsh
