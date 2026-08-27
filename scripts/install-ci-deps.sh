@@ -25,7 +25,7 @@ echo "  ✓ apt packages installed"
 echo "[2/4] Installing TinyTeX..."
 wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
 export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
-# Install required LaTeX packages
+# Install required LaTeX packages (|| true because fmtutil may exit 1 on non-critical formats)
 tlmgr install \
   latexmk \
   fontspec \
@@ -48,7 +48,12 @@ tlmgr install \
   hyperref \
   url \
   etoolbox \
-  2>&1 | tail -5
+  2>&1 | tail -5 || true
+# Verify xelatex actually works
+if ! command -v xelatex >/dev/null 2>&1; then
+  echo "ERROR: xelatex not found after TinyTeX install"
+  exit 1
+fi
 echo "  ✓ TinyTeX installed"
 
 # --- Sarabun font ---

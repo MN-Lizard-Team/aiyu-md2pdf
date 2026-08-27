@@ -23,22 +23,27 @@ jobs:
       - name: Install poppler (pdfinfo)
         run: choco install poppler -y --no-progress
 
-      - name: Install TinyTeX
+      - name: Install TinyTeX + LaTeX packages
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://yihui.org/tinytex/install-bin-windows.bat" -OutFile "install-tinytex.bat"
           Start-Process -FilePath "install-tinytex.bat" -Wait -NoNewWindow
-          # TinyTeX installs to ~\AppData\Roaming\TinyTeX\bin\windows
-
-      - name: Install LaTeX packages
-        shell: pwsh
-        run: |
-          $tinytexBin = "$env:APPDATA\TinyTeX\bin\windows"
-          if (-not (Test-Path $tinytexBin)) {
-            $tinytexBin = "$env:LOCALAPPDATA\TinyTeX\bin\windows"
+          # Find TinyTeX bin dir
+          $tinytexBin = @(
+            "$env:APPDATA\TinyTeX\bin\windows",
+            "$env:LOCALAPPDATA\TinyTeX\bin\windows"
+          ) | Where-Object { Test-Path "$_\tlmgr.bat" } | Select-Object -First 1
+          if (-not $tinytexBin) {
+            Write-Error "TinyTeX tlmgr.bat not found"
+            exit 1
           }
+          Write-Host "TinyTeX bin: $tinytexBin"
           $env:PATH = "$tinytexBin;$env:PATH"
-          tlmgr install latexmk fontspec polyglossia fancyhdr lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox 2>&1 | Select-Object -Last 5
+          # Install packages (2>&1 to merge stderr, || true for non-critical fmtutil errors)
+          & "$tinytexBin\tlmgr.bat" install latexmk fontspec polyglossia fancyhdr lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox 2>&1 | Select-Object -Last 5
+          # Verify
+          & "$tinytexBin\xelatex.exe" --version | Select-Object -First 1
+          echo $tinytexBin >> $env:GITHUB_PATH
 
       - name: Install Sarabun font
         shell: pwsh
@@ -59,15 +64,6 @@ jobs:
           }
 
       - run: npm ci
-
-      - name: Add TinyTeX to PATH
-        shell: pwsh
-        run: |
-          $tinytexBin = "$env:APPDATA\TinyTeX\bin\windows"
-          if (-not (Test-Path $tinytexBin)) {
-            $tinytexBin = "$env:LOCALAPPDATA\TinyTeX\bin\windows"
-          }
-          echo $tinytexBin >> $env:GITHUB_PATH
 
       - name: Verify tools
         shell: pwsh
