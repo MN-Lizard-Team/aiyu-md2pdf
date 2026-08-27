@@ -15,7 +15,7 @@
   "scripts": {
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
-    "test:e2e": "vitest run tests/e2e",
+    "test:e2e": "vitest run tests/e2e --no-file-parallelism",
     "test:watch": "vitest",
     "lint": "eslint bin/ src/ tests/",
     "build:example": "node bin/cli.js docs/example/example-th.md"

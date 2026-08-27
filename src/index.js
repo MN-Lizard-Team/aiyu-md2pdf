@@ -143,10 +143,17 @@ function buildOne(sourceMd, opts) {
     console.log(`  ⚠ DOCX build failed (non-fatal, exit ${docxResult.exitCode})`);
   }
 
-  // Cleanup .mmd
+  // Cleanup .mmd (use fs.rmSync with retry for Windows EPERM)
   if (!keepMermaid) {
     for (const f of fs.readdirSync(activeDiagramsDir)) {
-      if (f.endsWith('.mmd')) fs.unlinkSync(path.join(activeDiagramsDir, f));
+      if (f.endsWith('.mmd')) {
+        const mmdPath = path.join(activeDiagramsDir, f);
+        try {
+          fs.rmSync(mmdPath, { force: true, maxRetries: 3, retryDelay: 500 });
+        } catch {
+          // Non-fatal: .mmd cleanup is best-effort
+        }
+      }
     }
   }
 
@@ -235,7 +242,11 @@ function cleanupMmdInDir(dir) {
   if (!fs.existsSync(dir)) return;
   for (const f of fs.readdirSync(dir)) {
     if (f.endsWith('.mmd')) {
-      fs.unlinkSync(path.join(dir, f));
+      try {
+        fs.rmSync(path.join(dir, f), { force: true, maxRetries: 3, retryDelay: 500 });
+      } catch {
+        // Non-fatal: .mmd cleanup is best-effort
+      }
     }
   }
 }
