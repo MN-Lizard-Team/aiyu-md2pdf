@@ -13,7 +13,7 @@ echo "=========================================="
 # --- System packages ---
 echo "[1/3] Installing apt packages..."
 sudo apt-get update -qq
-sudo apt-get install -y -qq \
+sudo apt-get install -y \
   pandoc \
   texlive-xetex \
   texlive-lang-thai \
@@ -22,9 +22,7 @@ sudo apt-get install -y -qq \
   texlive-fonts-recommended \
   poppler-utils \
   shellcheck \
-  unzip \
-  fonts-noto-core \
-  2>/dev/null
+  unzip
 echo "  ✓ apt packages installed"
 
 # --- Sarabun font (not in apt, download from Google Fonts) ---

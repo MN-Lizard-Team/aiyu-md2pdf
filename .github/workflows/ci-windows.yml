@@ -17,13 +17,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install MiKTeX
-        uses: MiKTeX/setup-miktex@v1
-        with:
-          miktex-version: 'latest'
-
       - name: Install Pandoc
         run: choco install pandoc -y --no-progress
+
+      - name: Install MiKTeX
+        run: choco install miktex -y --no-progress
 
       - name: Install poppler (pdfinfo)
         run: choco install poppler -y --no-progress
@@ -51,12 +49,37 @@ jobs:
 
       - name: Set MiKTeX PATH
         shell: pwsh
-        run: echo "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64" >> $env:GITHUB_PATH
+        run: |
+          $miktexBin = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs\MiKTeX" -Recurse -Filter "xelatex.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($miktexBin) {
+            $miktexDir = Split-Path $miktexBin.FullName
+            echo $miktexDir >> $env:GITHUB_PATH
+            Write-Host "Added MiKTeX bin to PATH: $miktexDir"
+          } else {
+            # Fallback: check common install locations
+            $candidates = @(
+              "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64",
+              "C:\Program Files\MiKTeX\miktex\bin\x64",
+              "C:\Program Files (x86)\MiKTeX\miktex\bin\x64"
+            )
+            foreach ($c in $candidates) {
+              if (Test-Path "$c\xelatex.exe") {
+                echo $c >> $env:GITHUB_PATH
+                Write-Host "Added MiKTeX bin to PATH: $c"
+                break
+              }
+            }
+          }
+
+      - name: Verify tools
+        shell: pwsh
+        run: |
+          Write-Host "pandoc: $(pandoc --version | Select-Object -First 1)"
+          Write-Host "xelatex: $(xelatex --version 2>&1 | Select-Object -First 1)"
+          Write-Host "mmdc: $(mmdc --version 2>&1 | Select-Object -First 1)"
 
       - name: Run E2E tests
         run: npm run test:e2e
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'false'
 
       - name: Upload build output on failure
         if: failure()
