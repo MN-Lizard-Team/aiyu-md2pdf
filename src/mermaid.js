@@ -55,14 +55,14 @@ function renderOne(code, idx, assetsDir, themePrefix, puppeteerConfig, filePrefi
   const pngRes = spawnSync(commandName(), [
     '-i', mmdPath, '-o', imgPath, '-w', '3200', '-H', '2400', '-b', 'white',
     '-p', puppeteerConfig, '--scale', '3',
-  ], { timeout: 60000, encoding: 'utf-8' });
+  ], { timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32' });
   if (pngRes.status !== 0 || !fs.existsSync(imgPath) || fs.statSync(imgPath).size === 0) {
     throw new Error(`PNG render failed for ${filePrefix}-${number}: ${(pngRes.stderr || '').slice(0, 500)}`);
   }
 
   const svgRes = spawnSync(commandName(), [
     '-i', mmdPath, '-o', svgPath, '-b', 'white', '-p', puppeteerConfig,
-  ], { timeout: 60000, encoding: 'utf-8' });
+  ], { timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32' });
   if (svgRes.status !== 0 || !fs.existsSync(svgPath)) {
     console.error(`    ⚠ SVG render failed for ${filePrefix}-${number}`);
   }

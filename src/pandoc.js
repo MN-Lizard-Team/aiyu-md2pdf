@@ -35,6 +35,7 @@ function runPandoc(args, buildDir, logPath) {
     encoding: 'utf-8',
     timeout: 120000,
     windowsHide: true,
+    shell: process.platform === 'win32',
   });
   const log = `${result.stdout || ''}${result.stderr || ''}`;
   fs.writeFileSync(logPath, log, 'utf-8');

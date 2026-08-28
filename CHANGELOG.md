@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] — 2026-08-28
+
+### Fixed
+- Windows Mermaid CLI `.cmd` shims now execute correctly while Unix remains shell-free.
+
 ## [1.1.0] — 2026-08-27
 
 Hardening release focused on reliable cross-platform builds, safe subprocess execution, and deterministic outputs.
@@ -17,7 +22,7 @@ Hardening release focused on reliable cross-platform builds, safe subprocess exe
 - Heading-based Mermaid captions now resolve the current block correctly.
 - Builds use unique IDs for temporary files, output files, and diagram directories.
 - PDF/DOCX outputs are validated and promoted atomically instead of accepting zero-byte files.
-- Windows subprocess execution no longer requires `shell: true`; resource paths use the platform delimiter.
+- Subprocesses use direct execution on Unix and the required Windows `.cmd` shim handling; resource paths use the platform delimiter.
 - LaTeX uses restricted shell mode instead of unrestricted `--shell-escape`.
 - E2E tests run sequentially to avoid shared-output races.
 - JavaScript ESLint configuration and CI job added.
@@ -81,5 +86,6 @@ Initial release — Node.js CLI for converting Markdown to PDF + Word with Merma
 - MIT license
 - Previous bash version preserved in `legacy/` for reference
 
+[1.1.1]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.1.1
 [1.1.0]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.1.0
 [1.0.0]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.0.0

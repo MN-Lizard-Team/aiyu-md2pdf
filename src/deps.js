@@ -15,7 +15,7 @@ export function commandExists(cmd) {
 
 export function toolVersion(cmd) {
   const result = spawnSync(executableName(cmd), ['--version'], {
-    encoding: 'utf-8', windowsHide: true,
+    encoding: 'utf-8', windowsHide: true, shell: process.platform === 'win32',
   });
   if (result.status !== 0 || !result.stdout) return '';
   return result.stdout.split(/\r?\n/)[0].trim();
