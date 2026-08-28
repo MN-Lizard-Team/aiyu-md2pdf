@@ -69,6 +69,10 @@ function renderOne(code, idx, assetsDir, themePrefix, puppeteerConfig, filePrefi
   return { imgPath, svgPath };
 }
 
+function markdownPath(filePath) {
+  return filePath.split(path.sep).join('/');
+}
+
 function replaceBlocks(content, replacement) {
   const headings = buildHeadingMap(content);
   let count = 0;
@@ -85,7 +89,7 @@ export function renderMermaid(content, opts) {
   const result = replaceBlocks(content, (code, idx, offset, headings) => {
     const { imgPath } = renderOne(code, idx, assetsDir, themePrefix, puppeteerConfigPath, filePrefix);
     const caption = findCaption(content, offset, headings);
-    const relPath = path.relative(path.dirname(tempMdPath), imgPath);
+    const relPath = markdownPath(path.relative(path.dirname(tempMdPath), imgPath));
     return caption ? `\n![${caption}](${relPath})\n` : `\n![](${relPath})\n`;
   });
   console.log(`  ✓ Rendered ${result.count} mermaid diagrams for ${filePrefix}`);
@@ -101,7 +105,7 @@ export function reuseMermaid(content, opts) {
       throw new Error(`Missing cached Mermaid image for ${filePrefix}-${number}: ${imgPath}`);
     }
     const caption = findCaption(content, offset, headings);
-    const relPath = path.relative(path.dirname(tempMdPath), imgPath);
+    const relPath = markdownPath(path.relative(path.dirname(tempMdPath), imgPath));
     return caption ? `\n![${caption}](${relPath})\n` : `\n![](${relPath})\n`;
   });
   return result;
