@@ -10,8 +10,8 @@ import {
 const TIMEOUT = 300000;
 
 describe('Smoke tests', () => {
-  it('builds example-th.md → PDF + DOCX exist and are non-empty', () => {
-    runBuild({ files: ['docs/example/example-th.md'] });
+  it('builds example-th.md → PDF + DOCX exist and are non-empty', async () => {
+    await runBuild({ files: ['docs/example/example-th.md'] });
     const pdf = getOutputPdfPath('example-th');
     const docx = getOutputDocxPath('example-th');
     assertFileExists(pdf);
@@ -20,8 +20,8 @@ describe('Smoke tests', () => {
     assertFileMinSize(docx, 1000);
   }, TIMEOUT);
 
-  it('builds example-en.md → PDF + DOCX exist and are non-empty', () => {
-    runBuild({ files: ['docs/example/example-en.md'] });
+  it('builds example-en.md → PDF + DOCX exist and are non-empty', async () => {
+    await runBuild({ files: ['docs/example/example-en.md'] });
     const pdf = getOutputPdfPath('example-en');
     const docx = getOutputDocxPath('example-en');
     assertFileExists(pdf);

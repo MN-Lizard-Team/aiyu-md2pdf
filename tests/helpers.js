@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
-import { build } from '../src/index.js';
+import { spawn, spawnSync } from 'node:child_process';
 import { OUTPUT_DIR, DIAGRAMS_DIR } from '../src/paths.js';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -15,7 +14,24 @@ const TESTS_ROOT = __dirname;
  * With the new flat structure, output is at result/output/{basename}.pdf
  */
 export function runBuild(opts = {}) {
-  return build(opts);
+  const args = [path.join(TESTS_ROOT, '..', 'bin', 'cli.js')];
+  if (opts.noMermaid) args.push('--no-mermaid');
+  if (opts.keepMermaid) args.push('--keep-mermaid');
+  if (opts.strict) args.push('--strict');
+  if (opts.failFast) args.push('--fail-fast');
+  if (opts.files?.length) args.push(...opts.files);
+
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, args, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] });
+    let output = '';
+    child.stdout.on('data', (chunk) => { output += chunk; });
+    child.stderr.on('data', (chunk) => { output += chunk; });
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code === 0) resolve(output);
+      else reject(new Error(`Build exited with code ${code}:\n${output}`));
+    });
+  });
 }
 
 function latestMatchingFile(directory, pattern) {

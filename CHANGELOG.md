@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Treat Mermaid SVG rendering failures as build failures instead of silently continuing.
 - Continue building remaining documents after a per-file failure, while preserving `--fail-fast` as an opt-in mode.
 - Return non-zero status when requested files or output formats fail.
-- Run long-running E2E builds with Vitest's fork pool to avoid worker RPC `onTaskUpdate` timeouts.
+- Run long-running E2E builds asynchronously through the CLI with Vitest's fork pool to avoid worker RPC `onTaskUpdate` timeouts.
 
 ### Security
 - Upgrade Mermaid CLI to `11.16.0` and Vitest to `3.2.6`.

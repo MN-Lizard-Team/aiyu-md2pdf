@@ -14,16 +14,16 @@ import {
 const TIMEOUT = 300000;
 
 describe('Edge case tests', () => {
-  it('--no-mermaid reuses existing diagrams and builds PDF', () => {
+  it('--no-mermaid reuses existing diagrams and builds PDF', async () => {
     // First do a full build to create diagrams
-    runBuild({ files: [fixturePath('mermaid-th.md')] });
+    await runBuild({ files: [fixturePath('mermaid-th.md')] });
     const fullDir = findLatestOutputDir('mermaid-th');
     expect(fullDir).not.toBeNull();
     const fullPngCount = countFiles(fullDir, /\.png$/);
     expect(fullPngCount).toBe(3);
 
     // Now build with --no-mermaid
-    runBuild({ files: [fixturePath('mermaid-th.md')], noMermaid: true });
+    await runBuild({ files: [fixturePath('mermaid-th.md')], noMermaid: true });
     const pdf = getOutputPdfPath('mermaid-th');
     const docx = getOutputDocxPath('mermaid-th');
     assertFileExists(pdf);
@@ -32,31 +32,31 @@ describe('Edge case tests', () => {
     expect(assertDocxHasMedia(docx)).toBe(true);
   }, TIMEOUT * 2);
 
-  it('--keep-mermaid retains .mmd source files', () => {
-    runBuild({ files: [fixturePath('mermaid-th.md')], keepMermaid: true });
+  it('--keep-mermaid retains .mmd source files', async () => {
+    await runBuild({ files: [fixturePath('mermaid-th.md')], keepMermaid: true });
     const dir = findLatestOutputDir('mermaid-th');
     const mmdCount = countFiles(dir, /\.mmd$/);
     expect(mmdCount).toBe(3);
   }, TIMEOUT);
 
-  it('file without frontmatter builds using filename as title', () => {
-    runBuild({ files: [fixturePath('minimal.md')], noMermaid: true });
+  it('file without frontmatter builds using filename as title', async () => {
+    await runBuild({ files: [fixturePath('minimal.md')], noMermaid: true });
     const pdf = getOutputPdfPath('minimal');
     assertFileExists(pdf);
     assertFileMinSize(pdf, 500);
   }, TIMEOUT);
 
-  it('special LaTeX characters in frontmatter do not crash build', () => {
-    runBuild({ files: [fixturePath('special-chars.md')] });
+  it('special LaTeX characters in frontmatter do not crash build', async () => {
+    await runBuild({ files: [fixturePath('special-chars.md')] });
     const pdf = getOutputPdfPath('special-chars');
     assertFileExists(pdf);
     assertFileMinSize(pdf, 500);
   }, TIMEOUT);
 
-  it('empty file does not crash (graceful exit)', () => {
+  it('empty file does not crash (graceful exit)', async () => {
     let threw = false;
     try {
-      runBuild({ files: [fixturePath('empty.md')] });
+      await runBuild({ files: [fixturePath('empty.md')] });
     } catch (e) {
       threw = true;
       expect(e.message).toBeTruthy();

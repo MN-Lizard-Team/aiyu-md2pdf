@@ -14,8 +14,8 @@ import {
 const TIMEOUT = 300000;
 
 describe('Content tests', () => {
-  it('example-th PDF has >= 4 pages and >= 50KB', () => {
-    runBuild({ files: ['docs/example/example-th.md'] });
+  it('example-th PDF has >= 4 pages and >= 50KB', async () => {
+    await runBuild({ files: ['docs/example/example-th.md'] });
     const pdf = getOutputPdfPath('example-th');
     const size = assertFileMinSize(pdf, 50 * 1024);
     const pages = assertPdfPages(pdf, 4);
