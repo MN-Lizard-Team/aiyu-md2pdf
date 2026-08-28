@@ -15,12 +15,14 @@ program
   .argument('[files...]', 'Markdown files to build (default: all .md in docs/)')
   .option('--no-mermaid', 'Skip Mermaid rendering, reuse existing diagrams')
   .option('--keep-mermaid', 'Keep .mmd source files for debugging')
+  .option('--strict', 'Fail if any requested output format is unavailable')
   .action(async (files, opts) => {
     try {
       const result = build({
         files: files.length > 0 ? files : undefined,
         noMermaid: opts.mermaid === false,
         keepMermaid: opts.keepMermaid === true,
+        strict: opts.strict === true,
       });
       process.exit(result.totalPdfs > 0 ? 0 : 1);
     } catch (err) {

@@ -14,6 +14,7 @@ import {
   getPuppeteerConfigPath,
   getReferenceDocxPath,
   randomSuffix,
+  createBuildId,
   basenameNoExt,
 } from '../../src/paths.js';
 
@@ -79,6 +80,15 @@ describe('randomSuffix', () => {
     const a = randomSuffix(12);
     const b = randomSuffix(12);
     expect(a).not.toBe(b);
+  });
+});
+
+describe('createBuildId', () => {
+  it('creates unique non-empty identifiers', () => {
+    const first = createBuildId();
+    const second = createBuildId();
+    expect(first).toMatch(/^\d+-\d+-[a-f0-9]+$/);
+    expect(first).not.toBe(second);
   });
 });
 

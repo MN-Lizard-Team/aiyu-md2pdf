@@ -37,10 +37,10 @@ The tool spawns external processes:
 | Command | Purpose | Risk |
 |---------|---------|------|
 | `pandoc` | Markdown → PDF/DOCX | Low — no user input in args |
-| `xelatex` | PDF engine | Low — `--shell-escape` is enabled by design for font loading |
+| `xelatex` | PDF engine | Restricted — invoked with `--shell-restricted` |
 | `mmdc` | Mermaid → PNG/SVG | Low — writes to temp files only |
 
-> **Note:** `xelatex --shell-escape` is required for Sarabun font loading via `fontspec`. This is a known trade-off. If your environment prohibits `--shell-escape`, this tool will not work.
+> **Note:** v1.1.0 uses `xelatex --shell-restricted`. Font loading through `fontspec` does not require unrestricted shell escape. Raw LaTeX in input documents is still treated as trusted content; do not build untrusted Markdown in a privileged environment.
 
 ### Mermaid CLI (mmdc)
 
@@ -66,7 +66,7 @@ The tool writes to:
 
 - `./build/` — temporary rendered Markdown + preamble
 - `./result/output/` — PDF + DOCX output
-- `./result/diagrams/{filename}/` — rendered PNG + SVG diagrams
+- `./result/diagrams/{filename}-{build-id}/` — rendered PNG + SVG diagrams
 
 No files are written outside the current working directory (except `assets/` which is read-only from the package install location).
 

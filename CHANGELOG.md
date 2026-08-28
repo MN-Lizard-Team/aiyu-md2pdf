@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] — 2026-08-27
+
+Hardening release focused on reliable cross-platform builds, safe subprocess execution, and deterministic outputs.
+
+### Fixed
+- Mermaid blocks now support LF/CRLF and common language-tag whitespace/casing.
+- `--no-mermaid` now replaces Mermaid blocks with cached PNG references and validates the cache.
+- Heading-based Mermaid captions now resolve the current block correctly.
+- Builds use unique IDs for temporary files, output files, and diagram directories.
+- PDF/DOCX outputs are validated and promoted atomically instead of accepting zero-byte files.
+- Windows subprocess execution no longer requires `shell: true`; resource paths use the platform delimiter.
+- LaTeX uses restricted shell mode instead of unrestricted `--shell-escape`.
+- E2E tests run sequentially to avoid shared-output races.
+- JavaScript ESLint configuration and CI job added.
+
+### Security
+- Duplicate output basenames are rejected.
+- Required LaTeX packages are verified in CI instead of masking all `tlmgr` failures.
+- Cleanup failures are reported as warnings.
+
+### Tests
+- Unit coverage increased to 48 tests.
+- E2E coverage validates cached Mermaid reuse and embedded DOCX media.
+
 ## [1.0.0] — 2026-08-27
 
 Initial release — Node.js CLI for converting Markdown to PDF + Word with Mermaid diagrams, Thai & English support, cross-platform (Linux, macOS, Windows).
@@ -48,7 +72,7 @@ Initial release — Node.js CLI for converting Markdown to PDF + Word with Merma
 
 ### CI
 - `.github/workflows/ci.yml` — Linux: lint (shellcheck) + unit + e2e
-- `.github/workflows/ci-windows.yml` — Windows: e2e with MiKTeX
+- `.github/workflows/ci-windows.yml` — Windows: e2e with TinyTeX
 - `scripts/install-ci-deps.sh` — CI dependency installer (apt + npm)
 - Build artifacts uploaded on failure
 
@@ -57,4 +81,5 @@ Initial release — Node.js CLI for converting Markdown to PDF + Word with Merma
 - MIT license
 - Previous bash version preserved in `legacy/` for reference
 
+[1.1.0]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.1.0
 [1.0.0]: https://github.com/MN-Lizard-Team/aiyu-md2pdf/releases/tag/v1.0.0

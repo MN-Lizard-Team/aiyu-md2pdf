@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import path from 'node:path';
 import {
   runBuild,
   getOutputPdfPath,
@@ -7,6 +6,7 @@ import {
   findLatestOutputDir,
   assertFileExists,
   assertFileMinSize,
+  assertDocxHasMedia,
   countFiles,
   fixturePath,
 } from '../helpers.js';
@@ -25,8 +25,11 @@ describe('Edge case tests', () => {
     // Now build with --no-mermaid
     runBuild({ files: [fixturePath('mermaid-th.md')], noMermaid: true });
     const pdf = getOutputPdfPath('mermaid-th');
+    const docx = getOutputDocxPath('mermaid-th');
     assertFileExists(pdf);
     assertFileMinSize(pdf, 1000);
+    assertFileMinSize(docx, 1000);
+    expect(assertDocxHasMedia(docx)).toBe(true);
   }, TIMEOUT * 2);
 
   it('--keep-mermaid retains .mmd source files', () => {

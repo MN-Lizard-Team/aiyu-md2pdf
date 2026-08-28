@@ -1,6 +1,6 @@
 {
   "name": "aiyu-md2pdf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Markdown → PDF + Word with Mermaid diagrams. Thai & English. Cross-platform.",
   "license": "MIT",
   "author": "Aiyu",
@@ -13,7 +13,7 @@
   },
   "main": "./src/index.js",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run --no-file-parallelism",
     "test:unit": "vitest run tests/unit",
     "test:e2e": "vitest run tests/e2e --no-file-parallelism",
     "test:watch": "vitest",
@@ -28,6 +28,7 @@
     "@mermaid-js/mermaid-cli": "11.4.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@mermaid-js/mermaid-cli": "11.4.2",
     "eslint": "^9.10.0",
     "vitest": "^2.1.0"

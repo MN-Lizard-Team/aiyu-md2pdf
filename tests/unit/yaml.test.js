@@ -18,8 +18,9 @@ describe('parseFrontmatter', () => {
 
   it('handles malformed YAML gracefully', () => {
     const md = '---\ntitle: "unterminated\n---\n\nBody';
-    const { frontmatter } = parseFrontmatter(md);
+    const { frontmatter, warning } = parseFrontmatter(md);
     expect(frontmatter).toEqual({});
+    expect(warning).toMatch(/Malformed YAML/);
   });
 
   it('handles CRLF line endings', () => {

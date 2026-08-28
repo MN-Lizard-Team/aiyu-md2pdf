@@ -10,16 +10,20 @@ const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 export function parseFrontmatter(content) {
   const m = content.match(FRONTMATTER_RE);
   if (!m) {
-    return { frontmatter: {}, body: content };
+    return { frontmatter: {}, body: content, warning: null };
   }
   let data = {};
+  let warning = null;
   try {
     data = yaml.load(m[1]) || {};
-  } catch {
-    // Malformed YAML — treat as no frontmatter
-    data = {};
+    if (typeof data !== 'object' || Array.isArray(data)) {
+      warning = 'Frontmatter must be a YAML object';
+      data = {};
+    }
+  } catch (error) {
+    warning = `Malformed YAML frontmatter: ${error.message}`;
   }
-  return { frontmatter: data, body: content.slice(m[0].length) };
+  return { frontmatter: data, body: content.slice(m[0].length), warning };
 }
 
 /**
@@ -58,7 +62,7 @@ export function latexEscape(str) {
  * Read a markdown file, parse frontmatter, and return escaped fields + body.
  */
 export function parseDocument(content, fallbackTitle = '') {
-  const { frontmatter, body } = parseFrontmatter(content);
+  const { frontmatter, body, warning } = parseFrontmatter(content);
   const fields = extractFields(frontmatter);
   return {
     title: fields.title || fallbackTitle,
@@ -67,5 +71,6 @@ export function parseDocument(content, fallbackTitle = '') {
     date: fields.date,
     document: fields.document,
     body,
+    warning,
   };
 }

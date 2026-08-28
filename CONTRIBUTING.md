@@ -59,7 +59,7 @@ Follow the existing code style. Key conventions:
 - **Functions over classes** — keep it functional
 - **JSDoc comments** on exported functions
 - **Cross-platform** — use `node:path`, avoid shell-specific assumptions
-- **`spawnSync` with `shell: true`** — for cross-platform command execution
+- **Direct subprocess execution** — avoid `shell: true`; resolve Windows `.cmd`/`.exe` commands explicitly
 
 ### 3. Write tests
 

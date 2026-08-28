@@ -1,10 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import path from 'node:path';
+import { describe, it } from 'vitest';
 import {
   runBuild,
   getOutputPdfPath,
   getOutputDocxPath,
-  findLatestOutputDir,
   assertFileExists,
   assertFileMinSize,
 } from '../helpers.js';

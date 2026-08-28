@@ -1,15 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// src/ -> package root (where assets/ lives, shipped with the npm package)
 const PKG_ROOT = path.resolve(__dirname, '..');
-
-// User-facing directories are relative to CWD so the CLI works from anywhere.
-// Assets (preamble, theme, reference.docx) are internal to the package and
-// always resolve to PKG_ROOT/assets regardless of CWD.
 const CWD = process.cwd();
 
 export const PROJECT_ROOT = CWD;
@@ -46,13 +42,12 @@ export function ensureDirs() {
   }
 }
 
-export function randomSuffix(len = 6) {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let out = '';
-  for (let i = 0; i < len; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return out;
+export function createBuildId() {
+  return `${Date.now()}-${process.pid}-${crypto.randomBytes(4).toString('hex')}`;
+}
+
+export function randomSuffix(length = 6) {
+  return crypto.randomBytes(length).toString('hex').slice(0, length);
 }
 
 export function basenameNoExt(filePath) {

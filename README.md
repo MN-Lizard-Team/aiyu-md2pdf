@@ -50,21 +50,26 @@ aiyu-md2pdf docs/file.md
 
 The CLI needs `pandoc`, `xelatex`, and `mmdc` (Mermaid CLI) on your PATH.
 
-**Linux (apt):**
+**Linux (apt + TinyTeX):**
 ```bash
-sudo apt-get install -y pandoc texlive-xetex texlive-lang-thai texlive-fonts-extra poppler-utils
+sudo apt-get install -y pandoc poppler-utils wget
+wget -qO- https://yihui.org/tinytex/install-bin-unix.sh | sh
+export PATH="$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
+tlmgr install latexmk fontspec polyglossia titlesec tocloft enumitem adjustbox float
 npm install -g @mermaid-js/mermaid-cli@11.4.2
 ```
 
-**macOS (brew):**
+**macOS (brew + TinyTeX):**
 ```bash
-brew install pandoc texlive poppler
+brew install pandoc poppler
+brew install --cask basictex
 npm install -g @mermaid-js/mermaid-cli@11.4.2
 ```
 
-**Windows (choco):**
+**Windows:**
 ```powershell
-choco install pandoc miktex poppler -y
+# Install pandoc, TinyTeX, and poppler using their official installers
+# Then install Mermaid CLI:
 npm install -g @mermaid-js/mermaid-cli@11.4.2
 ```
 
@@ -88,7 +93,7 @@ aiyu-md2pdf docs/my-document.md
 # Build multiple files
 aiyu-md2pdf a.md b.md
 
-# Skip Mermaid rendering (reuse existing diagrams)
+# Skip Mermaid rendering (reuse and validate cached diagrams)
 aiyu-md2pdf --no-mermaid docs/doc.md
 
 # Keep .mmd source files for debugging
@@ -187,22 +192,22 @@ aiyu-md2pdf/
 
 ## Output
 
-Each build produces PDF + DOCX in `result/output/` and diagrams in `result/diagrams/{filename}/`:
+Each build produces uniquely named PDF + DOCX files in `result/output/` and diagrams in a unique directory under `result/diagrams/`:
 
 ```
 result/
 ├── output/
-│   ├── example-th.pdf           # PDF with TOC, numbered sections, captions
-│   ├── example-th.docx          # Word with Sarabun font
-│   └── e2e-system-architecture.pdf
+│   ├── example-th-<build-id>.pdf   # PDF with TOC and captions
+│   ├── example-th-<build-id>.docx  # Word with Sarabun font
+│   └── ...
 └── diagrams/
-    └── example-th/
-        ├── 001.png              # High-res PNG (3200×2400, scale 3×)
-        ├── 001.svg              # Vector SVG
+    └── example-th-<build-id>/
+        ├── 001.png                 # High-res PNG (3200×2400, scale 3×)
+        ├── 001.svg                 # Vector SVG
         └── ...
 ```
 
-PDF and DOCX are flat in `result/output/` — easy to find. Diagrams are grouped by filename under `result/diagrams/`. Each build overwrites the previous output for the same file.
+PDF and DOCX are flat in `result/output/` with a unique build ID. Diagrams are grouped by filename and build ID under `result/diagrams/`. This prevents collisions between duplicate filenames and concurrent builds. Use the most recent matching build when using `--no-mermaid`.
 
 ---
 
@@ -257,7 +262,7 @@ GitHub Actions runs on every push and pull request:
 | Workflow | OS | Jobs |
 |----------|----|------|
 | `ci.yml` | ubuntu-latest | lint (shellcheck), unit tests, e2e tests |
-| `ci-windows.yml` | windows-latest | e2e tests (with MiKTeX) |
+| `ci-windows.yml` | windows-latest | e2e tests (with TinyTeX) |
 
 Build artifacts are uploaded on test failure for debugging.
 
@@ -302,8 +307,11 @@ aiyu-md2pdf
 # Build ไฟล์เฉพาะ
 aiyu-md2pdf docs/my-document.md
 
-# ข้าม Mermaid rendering (ใช้รูปเดิม)
+# ข้าม Mermaid rendering (ใช้และตรวจสอบรูป cache เดิม)
 aiyu-md2pdf --no-mermaid docs/doc.md
+
+# บังคับให้ PDF และ DOCX ต้องสำเร็จทั้งคู่
+aiyu-md2pdf --strict docs/doc.md
 
 # เก็บไฟล์ .mmd สำหรับ debug
 aiyu-md2pdf --keep-mermaid docs/doc.md
@@ -314,10 +322,10 @@ aiyu-md2pdf --keep-mermaid docs/doc.md
 ```
 result/
 ├── output/                      ← PDF + DOCX (หาง่าย)
-│   ├── example-th.pdf
-│   └── example-th.docx
+│   ├── example-th-<build-id>.pdf
+│   └── example-th-<build-id>.docx
 └── diagrams/                    ← รูปไดอะแกรม
-    └── example-th/
+    └── example-th-<build-id>/
         ├── 001.png
         └── 001.svg
 ```

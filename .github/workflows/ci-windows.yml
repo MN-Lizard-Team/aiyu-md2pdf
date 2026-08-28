@@ -30,9 +30,12 @@ jobs:
         shell: pwsh
         run: |
           tlmgr update --self
-          tlmgr install latexmk fontspec polyglossia fancyhdr fancyvrb lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox enumitem titlesec tocloft adjustbox float 2>&1 | Select-Object -Last 5
-          # Verify polyglossia installed
-          tlmgr info polyglossia | Select-String "installed"
+          tlmgr install latexmk fontspec polyglossia fancyhdr fancyvrb lastpage xecjk environ trimspaces ulem pgfplots booktabs longtable caption graphics tools ec xcolor geometry hyperref url etoolbox enumitem titlesec tocloft adjustbox float
+          foreach ($package in @('polyglossia.sty', 'enumitem.sty', 'titlesec.sty', 'tocloft.sty', 'adjustbox.sty', 'float.sty')) {
+            $found = kpsewhich $package
+            if (-not $found) { Write-Error "Required LaTeX package missing: $package"; exit 1 }
+            Write-Host "$package -> $found"
+          }
 
       - name: Install Sarabun font
         shell: pwsh
