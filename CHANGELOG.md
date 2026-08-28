@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Normalize Windows backslash paths to POSIX separators in Markdown image references so Mermaid images embed in PDF and DOCX.
+- Use a pinned Poppler Windows archive so `pdfinfo.exe` is available on CI runners.
 
 ## [1.1.1] — 2026-08-28
 
