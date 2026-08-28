@@ -23,6 +23,23 @@ jobs:
       - name: Install poppler (pdfinfo)
         run: choco install poppler -y --no-progress
 
+      - name: Add Poppler to PATH
+        shell: pwsh
+        run: |
+          $candidates = @(
+            "C:\ProgramData\chocolatey\bin",
+            "C:\ProgramData\chocolatey\lib\poppler\tools\Library\bin",
+            "C:\Program Files\poppler\Library\bin"
+          )
+          $pdfinfo = $candidates | Where-Object { Test-Path "$_\pdfinfo.exe" } | Select-Object -First 1
+          if (-not $pdfinfo) {
+            $found = Get-ChildItem -Path "C:\ProgramData\chocolatey\lib" -Recurse -Filter "pdfinfo.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) { $pdfinfo = Split-Path $found.FullName }
+          }
+          if (-not $pdfinfo) { Write-Error "pdfinfo.exe not found after Poppler installation"; exit 1 }
+          Write-Host "Poppler bin: $pdfinfo"
+          echo $pdfinfo >> $env:GITHUB_PATH
+
       - name: Install TinyTeX
         uses: r-lib/actions/setup-tinytex@v2
 
@@ -79,6 +96,7 @@ jobs:
           Write-Host "pandoc: $(pandoc --version | Select-Object -First 1)"
           Write-Host "xelatex: $(xelatex --version 2>&1 | Select-Object -First 1)"
           Write-Host "mmdc: $(mmdc --version 2>&1 | Select-Object -First 1)"
+          Write-Host "pdfinfo: $(pdfinfo -v 2>&1 | Select-Object -First 1)"
 
       - name: Run E2E tests
         run: npm run test:e2e
