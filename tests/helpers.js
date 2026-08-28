@@ -71,7 +71,7 @@ export function assertFileMinSize(filePath, minBytes) {
 
 export function assertPdfPages(pdfPath, minPages) {
   assertFileExists(pdfPath);
-  const res = spawnSync('pdfinfo', [pdfPath], { encoding: 'utf-8', shell: true });
+  const res = spawnSync('pdfinfo', [pdfPath], { encoding: 'utf-8', shell: false });
   if (res.status !== 0) {
     throw new Error(`pdfinfo failed for ${pdfPath}: ${res.stderr}`);
   }
@@ -88,7 +88,7 @@ export function assertPdfPages(pdfPath, minPages) {
 
 export function assertDocxHasMedia(docxPath) {
   assertFileExists(docxPath);
-  const res = spawnSync('unzip', ['-l', docxPath], { encoding: 'utf-8', shell: true });
+  const res = spawnSync('unzip', ['-l', docxPath], { encoding: 'utf-8', shell: false });
   if (res.status !== 0) {
     throw new Error(`unzip failed for ${docxPath}: ${res.stderr}`);
   }

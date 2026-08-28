@@ -53,3 +53,7 @@ export function randomSuffix(length = 6) {
 export function basenameNoExt(filePath) {
   return path.basename(filePath, path.extname(filePath));
 }
+
+export function isSafeShellArg(value) {
+  return !/[&|<>^()%!"'`\r\n]/.test(String(value));
+}

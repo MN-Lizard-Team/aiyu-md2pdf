@@ -13,9 +13,9 @@
   },
   "main": "./src/index.js",
   "scripts": {
-    "test": "vitest run --no-file-parallelism",
+    "test": "vitest run --no-file-parallelism --pool=forks",
     "test:unit": "vitest run tests/unit",
-    "test:e2e": "vitest run tests/e2e --no-file-parallelism",
+    "test:e2e": "vitest run tests/e2e --no-file-parallelism --pool=forks",
     "test:watch": "vitest",
     "lint": "eslint bin/ src/ tests/",
     "build:example": "node bin/cli.js docs/example/example-th.md"
@@ -25,13 +25,13 @@
     "js-yaml": "^4.1.0"
   },
   "peerDependencies": {
-    "@mermaid-js/mermaid-cli": "11.4.2"
+    "@mermaid-js/mermaid-cli": "^11.16.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "@mermaid-js/mermaid-cli": "11.4.2",
+    "@mermaid-js/mermaid-cli": "11.16.0",
     "eslint": "^9.10.0",
-    "vitest": "^2.1.0"
+    "vitest": "^3.2.6"
   },
   "files": [
     "bin/",

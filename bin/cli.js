@@ -16,6 +16,7 @@ program
   .option('--no-mermaid', 'Skip Mermaid rendering, reuse existing diagrams')
   .option('--keep-mermaid', 'Keep .mmd source files for debugging')
   .option('--strict', 'Fail if any requested output format is unavailable')
+  .option('--fail-fast', 'Stop after the first document build failure')
   .action(async (files, opts) => {
     try {
       const result = build({
@@ -23,8 +24,12 @@ program
         noMermaid: opts.mermaid === false,
         keepMermaid: opts.keepMermaid === true,
         strict: opts.strict === true,
+        failFast: opts.failFast === true,
       });
-      process.exit(result.totalPdfs > 0 ? 0 : 1);
+      if (result.failures.length) {
+        console.error(`\n✗ ${result.failures.length} build failure(s)`);
+      }
+      process.exit(result.totalPdfs > 0 && result.failures.length === 0 ? 0 : 1);
     } catch (err) {
       console.error(`\n✗ Build failed: ${err.message}`);
       process.exit(1);

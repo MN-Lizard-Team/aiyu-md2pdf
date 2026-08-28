@@ -7,7 +7,7 @@ import {
 } from './paths.js';
 import { parseDocument, latexEscape } from './yaml.js';
 import { checkDeps } from './deps.js';
-import { renderMermaid, reuseMermaid, findLatestDiagrams } from './mermaid.js';
+import { renderMermaid, reuseMermaid, findLatestDiagrams, countMermaidBlocks } from './mermaid.js';
 import { writeTempPreamble, buildPdf, buildDocx } from './pandoc.js';
 
 function findInputFiles(docsDir) {
@@ -72,12 +72,14 @@ function buildOne(sourceMd, opts) {
   let activeDiagramsDir = docDiagramsDir;
   if (noMermaid) {
     console.log('[2/6] Skipping Mermaid rendering (--no-mermaid)');
-    activeDiagramsDir = findLatestDiagrams(DIAGRAMS_DIR, basename);
-    if (!activeDiagramsDir) throw new Error(`No cached diagrams found for ${basename}`);
-    console.log(`  → Reusing diagrams from: ${activeDiagramsDir}`);
-    renderedContent = reuseMermaid(raw, {
-      assetsDir: activeDiagramsDir, filePrefix: basename, tempMdPath: tempMd,
-    }).content;
+    if (countMermaidBlocks(raw) > 0) {
+      activeDiagramsDir = findLatestDiagrams(DIAGRAMS_DIR, basename);
+      if (!activeDiagramsDir) throw new Error(`No cached diagrams found for ${basename}`);
+      console.log(`  → Reusing diagrams from: ${activeDiagramsDir}`);
+      renderedContent = reuseMermaid(raw, {
+        assetsDir: activeDiagramsDir, filePrefix: basename, tempMdPath: tempMd,
+      }).content;
+    }
   } else {
     console.log(`[2/6] Rendering Mermaid diagrams for ${basename}...`);
     renderedContent = renderMermaid(raw, {
@@ -117,7 +119,9 @@ function buildOne(sourceMd, opts) {
 }
 
 export function build(opts = {}) {
-  const { files, noMermaid = false, keepMermaid = false, strict = false } = opts;
+  const {
+    files, noMermaid = false, keepMermaid = false, strict = false, failFast = false,
+  } = opts;
   ensureDirs();
   const inputFiles = files?.length ? files : findInputFiles(DOCS_DIR);
   if (!inputFiles.length) throw new Error(`No markdown files found in ${DOCS_DIR}/`);
@@ -138,15 +142,26 @@ export function build(opts = {}) {
   let totalPdfs = 0;
   let totalDocx = 0;
   let cleanupFailures = 0;
+  const failures = [];
   for (const sourceMd of inputFiles) {
     if (!fs.existsSync(sourceMd)) {
-      console.error(`ERROR: File not found: ${sourceMd}`);
+      const message = `File not found: ${sourceMd}`;
+      console.error(`ERROR: ${message}`);
+      failures.push({ file: sourceMd, message });
+      if (failFast) throw new Error(message);
       continue;
     }
-    const result = buildOne(sourceMd, { noMermaid, keepMermaid, buildId });
-    if (result.pdf) totalPdfs++;
-    if (result.docx) totalDocx++;
-    cleanupFailures += result.cleanupFailures;
+    try {
+      const result = buildOne(sourceMd, { noMermaid, keepMermaid, buildId });
+      if (result.pdf) totalPdfs++;
+      if (result.docx) totalDocx++;
+      cleanupFailures += result.cleanupFailures;
+    } catch (error) {
+      cleanupFailures += cleanupMmdInDir(path.join(DIAGRAMS_DIR, `${basenameNoExt(sourceMd)}-${buildId}`));
+      failures.push({ file: sourceMd, message: error.message });
+      console.error(`ERROR: ${sourceMd}: ${error.message}`);
+      if (failFast) throw error;
+    }
   }
 
   console.log('');
@@ -164,7 +179,7 @@ export function build(opts = {}) {
   else if (cleanupFailures) console.log(`  ⚠ Could not remove ${cleanupFailures} intermediate file(s)`);
   else console.log('  ✓ Cleaned .mmd source files');
   if (strict && totalDocx < totalPdfs) {
-    throw new Error('Strict mode: one or more DOCX files failed to build');
+    failures.push({ file: 'DOCX', message: 'One or more DOCX files failed to build' });
   }
-  return { totalPdfs, totalDocx, buildId };
+  return { totalPdfs, totalDocx, buildId, failures, cleanupFailures };
 }

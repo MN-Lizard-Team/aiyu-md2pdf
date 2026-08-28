@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { isSafeShellArg } from './paths.js';
 
 const MERMAID_BLOCK_RE = /```\s*mermaid\s*\r?\n([\s\S]*?)```/gi;
 
@@ -52,25 +53,37 @@ function renderOne(code, idx, assetsDir, themePrefix, puppeteerConfig, filePrefi
   fs.writeFileSync(mmdPath, fullCode, 'utf-8');
   console.log(`  → Rendering ${filePrefix}/${number} (PNG + SVG)...`);
 
-  const pngRes = spawnSync(commandName(), [
+  const pngArgs = [
     '-i', mmdPath, '-o', imgPath, '-w', '3200', '-H', '2400', '-b', 'white',
     '-p', puppeteerConfig, '--scale', '3',
-  ], { timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32' });
+  ];
+  const svgArgs = ['-i', mmdPath, '-o', svgPath, '-b', 'white', '-p', puppeteerConfig];
+  if (process.platform === 'win32' && [...pngArgs, ...svgArgs].some((arg) => !isSafeShellArg(arg))) {
+    throw new Error('Unsafe characters in a Mermaid path or argument');
+  }
+
+  const pngRes = spawnSync(commandName(), pngArgs, {
+    timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32',
+  });
   if (pngRes.status !== 0 || !fs.existsSync(imgPath) || fs.statSync(imgPath).size === 0) {
     throw new Error(`PNG render failed for ${filePrefix}-${number}: ${(pngRes.stderr || '').slice(0, 500)}`);
   }
 
-  const svgRes = spawnSync(commandName(), [
-    '-i', mmdPath, '-o', svgPath, '-b', 'white', '-p', puppeteerConfig,
-  ], { timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32' });
+  const svgRes = spawnSync(commandName(), svgArgs, {
+    timeout: 60000, encoding: 'utf-8', shell: process.platform === 'win32',
+  });
   if (svgRes.status !== 0 || !fs.existsSync(svgPath)) {
-    console.error(`    ⚠ SVG render failed for ${filePrefix}-${number}`);
+    throw new Error(`SVG render failed for ${filePrefix}-${number}: ${(svgRes.stderr || '').slice(0, 500)}`);
   }
   return { imgPath, svgPath };
 }
 
 function markdownPath(filePath) {
   return filePath.split(path.sep).join('/');
+}
+
+export function countMermaidBlocks(content) {
+  return [...content.matchAll(MERMAID_BLOCK_RE)].length;
 }
 
 function replaceBlocks(content, replacement) {
@@ -112,13 +125,21 @@ export function reuseMermaid(content, opts) {
 }
 
 export function findLatestDiagrams(diagramsDir, basename) {
-  if (!fs.existsSync(diagramsDir)) return null;
-  const prefix = `${basename}-`;
-  const matches = fs.readdirSync(diagramsDir)
-    .filter((name) => name.startsWith(prefix))
-    .map((name) => path.join(diagramsDir, name))
-    .filter((dir) => fs.statSync(dir).isDirectory())
-    .filter((dir) => fs.existsSync(path.join(dir, '001.png')))
-    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
-  return matches[0] || null;
+  try {
+    const prefix = `${basename}-`;
+    const matches = fs.readdirSync(diagramsDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name.startsWith(prefix))
+      .map((entry) => path.join(diagramsDir, entry.name))
+      .filter((dir) => {
+        try {
+          return fs.statSync(path.join(dir, '001.png')).isFile();
+        } catch {
+          return false;
+        }
+      })
+      .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+    return matches[0] || null;
+  } catch {
+    return null;
+  }
 }

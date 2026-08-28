@@ -16,6 +16,7 @@ import {
   randomSuffix,
   createBuildId,
   basenameNoExt,
+  isSafeShellArg,
 } from '../../src/paths.js';
 
 describe('paths', () => {
@@ -89,6 +90,14 @@ describe('createBuildId', () => {
     const second = createBuildId();
     expect(first).toMatch(/^\d+-\d+-[a-f0-9]+$/);
     expect(first).not.toBe(second);
+  });
+});
+
+describe('shell arguments', () => {
+  it('rejects command metacharacters and control characters', () => {
+    expect(isSafeShellArg('normal/path.md')).toBe(true);
+    expect(isSafeShellArg('bad & command.md')).toBe(false);
+    expect(isSafeShellArg('bad\ncommand.md')).toBe(false);
   });
 });
 

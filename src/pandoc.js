@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { randomSuffix, isSafeShellArg } from './paths.js';
 
 function commandName(command) {
   return process.platform === 'win32' ? `${command}.exe` : command;
@@ -30,6 +31,9 @@ export function writeTempPreamble(buildDir, basename, fields) {
 }
 
 function runPandoc(args, buildDir, logPath) {
+  if (process.platform === 'win32' && args.some((arg) => !isSafeShellArg(arg))) {
+    throw new Error('Unsafe characters in a Pandoc path or argument');
+  }
   const result = spawnSync(commandName('pandoc'), args, {
     cwd: buildDir,
     encoding: 'utf-8',
@@ -37,7 +41,7 @@ function runPandoc(args, buildDir, logPath) {
     windowsHide: true,
     shell: process.platform === 'win32',
   });
-  const log = `${result.stdout || ''}${result.stderr || ''}`;
+  const log = `${result.stdout || ''}${result.stderr || ''}${result.error?.message || ''}`;
   fs.writeFileSync(logPath, log, 'utf-8');
   return { result, log };
 }
@@ -47,7 +51,7 @@ export function buildPdf(opts) {
     tempMd, outputPdf, preamblePath, tempPreamblePath,
     buildDir, diagramsDir, scriptDir, basename,
   } = opts;
-  const tempOutput = `${outputPdf}.tmp-${process.pid}`;
+  const tempOutput = `${outputPdf}.tmp-${process.pid}-${randomSuffix()}`;
   const args = [
     '--from=markdown+yaml_metadata_block+pipe_tables+grid_tables',
     '--to=pdf', '--pdf-engine=xelatex',

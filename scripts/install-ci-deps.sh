@@ -67,7 +67,7 @@ echo "  ✓ Sarabun font installed"
 
 # --- Mermaid CLI (npm, pinned version) ---
 echo "[4/4] Installing Mermaid CLI (npm)..."
-MMDC_VERSION="11.4.2"
+MMDC_VERSION="11.16.0"
 npm install -g "@mermaid-js/mermaid-cli@${MMDC_VERSION}"
 echo "  ✓ Mermaid CLI @ ${MMDC_VERSION} installed"
 

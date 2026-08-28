@@ -47,14 +47,14 @@ describe('deps', () => {
       expect(toolVersion('pandoc')).toBe('pandoc 3.1.13');
     });
 
-    it('returns empty string on failure', () => {
+    it('returns null on failure', () => {
       vi.mocked(spawnSync).mockReturnValue({ status: 1, stdout: '' });
-      expect(toolVersion('bad')).toBe('');
+      expect(toolVersion('bad')).toBeNull();
     });
 
-    it('returns empty string when no stdout', () => {
+    it('returns null when no stdout', () => {
       vi.mocked(spawnSync).mockReturnValue({ status: 0, stdout: '' });
-      expect(toolVersion('bad')).toBe('');
+      expect(toolVersion('bad')).toBeNull();
     });
   });
 

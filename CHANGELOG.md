@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Normalize Windows backslash paths to POSIX separators in Markdown image references so Mermaid images embed in PDF and DOCX.
 - Use a pinned Poppler Windows archive so `pdfinfo.exe` is available on CI runners.
+- Harden Windows Pandoc and Mermaid subprocess arguments against shell metacharacters.
+- Use random temporary output suffixes to reduce collisions between concurrent builds.
+- Make Mermaid cache discovery resilient to stale or incomplete diagram directories.
+- Allow `--no-mermaid` for documents that contain no Mermaid diagrams.
+- Treat Mermaid SVG rendering failures as build failures instead of silently continuing.
+- Continue building remaining documents after a per-file failure, while preserving `--fail-fast` as an opt-in mode.
+- Return non-zero status when requested files or output formats fail.
+- Run long-running E2E builds with Vitest's fork pool to avoid worker RPC `onTaskUpdate` timeouts.
+
+### Security
+- Upgrade Mermaid CLI to `11.16.0` and Vitest to `3.2.6`.
+- Refresh the dependency lockfile and resolve reported npm audit vulnerabilities.
 
 ## [1.1.1] — 2026-08-28
 

@@ -40,7 +40,7 @@ describe('Edge case tests', () => {
   }, TIMEOUT);
 
   it('file without frontmatter builds using filename as title', () => {
-    runBuild({ files: [fixturePath('minimal.md')] });
+    runBuild({ files: [fixturePath('minimal.md')], noMermaid: true });
     const pdf = getOutputPdfPath('minimal');
     assertFileExists(pdf);
     assertFileMinSize(pdf, 500);
